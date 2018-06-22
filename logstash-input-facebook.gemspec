@@ -2,11 +2,11 @@ Gem::Specification.new do |s|
   s.name          = 'logstash-input-facebook'
   s.version       = '0.1.0'
   s.licenses      = ['Apache-2.0']
-  s.summary       = 'TODO: Write a short summary, because Rubygems requires one.'
-  s.description   = '{TODO: Write a longer description or delete this line.'
-  s.homepage      = 'TODO: Put your plugin''s website or public repo URL here.'
-  s.authors       = ['']
-  s.email         = ''
+  s.summary       = 'This input plugin get the data from a facebook account.'
+  s.description   = 'Aniadir aqui una descripcion completa.'
+  s.homepage      = 'https://github.com/felixramirezgarcia/logstash-input-facebook'
+  s.authors       = ['Felix R G']
+  s.email         = 'felixramirezgarcia@gmail.com'
   s.require_paths = ['lib']
 
   # Files
