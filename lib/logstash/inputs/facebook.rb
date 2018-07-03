@@ -3,36 +3,46 @@ require "logstash/inputs/base"
 require "logstash/namespace"
 require "stud/interval"
 require "socket" # for Socket.gethostname
+require "koala"
 
 # Generate a repeating message.
 #
 # This plugin is intented only as an example.
 
 class LogStash::Inputs::Facebook < LogStash::Inputs::Base
+
   config_name "facebook"
 
   # If undefined, Logstash will complain, even if codec is unused.
   default :codec, "plain"
 
-  # The message string to use in the event.
-  config :message, :validate => :string, :default => "Hello World!"
+  # OAuth token to access the facebook API with
+  config :oauth_token, :validate => :string, :required =>true
 
-  # Set how frequently messages should be sent.
-  #
-  # The default, `1`, means send a message every second.
-  config :interval, :validate => :number, :default => 1
+  # Set the frecuency.
+  config :interval, :validate => :number, :required =>true
+
+  # Facebook ID of the feed to monitor
+  config :facebook_id, :validate => :number, :required =>true
+
+  # Fields of the feed 
+  config :fields , :validate => :array , :required =>true
 
   public
   def register
-    @host = Socket.gethostname
+    @api = Koala::Facebook::API.new(@oauth_token)
   end # def register
 
   def run(queue)
     # we can abort the loop if stop? becomes true
     while !stop?
-      event = LogStash::Event.new("message" => @message, "host" => @host)
-      decorate(event)
-      queue << event
+      feed = @api.get_connections(@facebook_id, "feed" , { limit: 10, fields: @fields })
+      feed.each do |p|
+        event = LogStash::Event.new(p)
+        decorate(event)
+        queue << event
+      end
+
       # because the sleep interval can be big, when shutdown happens
       # we want to be able to abort the sleep
       # Stud.stoppable_sleep will frequently evaluate the given block
